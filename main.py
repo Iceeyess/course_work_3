@@ -10,3 +10,13 @@ checks_list = [Check(check_file.get('id'), check_file.get('state'), check_file.g
                      check_file.get('to')) for check_file in data if check_file]
 # Sorting by date.
 checks_list.sort(key=lambda a: a.date, reverse=True)
+
+# While count unequals to 5 iterations , then circle will be going on.
+count, index = 5, 0
+while count != index:
+    if checks_list[index].state == 'EXECUTED':
+        checks_list[index].print_check()
+        index += 1
+    else:
+        count += 1
+        index += 1
