@@ -31,13 +31,15 @@ class Check:
         """This func gets str words in the list"""
         return f"Instance for object operation date by {self.str_date}"
 
-    def get_card_number_account_number(self) -> str:
-        """Returns sequred card number in following format XXXX XX** **** XXXX"""
+    def get_card_number_account_number(self, account) -> str:
+        """Returns sequred card number in following format 'card name XXXX XX** **** XXXX'
+        or account name ****************XXXX or Нет данных. Открытие вклада if dictionary has None value
+        """
         reformatted_card_number, card_number, name_card = '', '', ''
-        if self.__from == None:
+        if account == None:
             return f"Нет данных. Открытие вклада"
         # __from field consist from 2-3 words, we leave only digits.
-        for word in self.__from.split():
+        for word in account.split():
             if word.isdigit():
                 card_number = word
             elif word.isalpha():
@@ -45,7 +47,7 @@ class Check:
         # divided on 2 ways: card(16-18 digits) and account(20 digits):
         # returns account name + account number:
         if len(card_number) >= 20:
-            return name_card + '*' * 16 + card_number[-4:]
+            return name_card + '*' * 2 + card_number[-4:]
         # returns card name + card_number:
         elif 16 <= len(card_number) <= 18:
             for slice_ in range(0, len(card_number), 2):
@@ -54,4 +56,17 @@ class Check:
                 else:
                     reformatted_card_number += "XX"
             return name_card + ''.join(
-                [reformatted_card_number[_: _ + 4] + ' ' for _ in range(0, len(reformatted_card_number), 4)])
+                [reformatted_card_number[_: _ + 4] + ' ' for _ in range(0, len(reformatted_card_number), 4)]).rstrip()
+
+    def get_account(self, value: str) -> str:
+        """Depends which parameter has added inside print_check function
+        it will be self.__from or self.__to argument."""
+        if value == self.__from:
+            return self.get_card_number_account_number(value)
+        elif value == self.__to:
+            return self.get_card_number_account_number(value)
+
+    def print_check(self) -> None:
+        print(self.str_date_format(self.date), "Перевод организации")
+        print(self.get_account(self.__from), "->", self.get_account(self.__to))
+        print(self.amount, "руб.", '\n')
